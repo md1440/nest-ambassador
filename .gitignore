@@ -1,4 +1,5 @@
 .snippet.md
+.dbdata
 .env.development
 .env.test
 # compiled output
