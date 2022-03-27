@@ -1,10 +1,10 @@
 # call with make
 
 build:
-  docker-compose build
+	docker compose build
  
 run:
-  docker-compose up -d
+	docker compose up
  
 stop:
-  docker-compose down
+	docker compose down
