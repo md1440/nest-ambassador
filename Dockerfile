@@ -7,4 +7,4 @@ RUN npm install
 # copy all files to /app
 COPY . .
 
-CMD npm run start:dev
+# CMD npm run start:dev
