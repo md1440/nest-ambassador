@@ -13,8 +13,8 @@ export class UserService {
     return this.userRepository.save(options);
   }
 
-  async find(email: string) {
-    return this.userRepository.find({ email });
+  async find(options) {
+    return this.userRepository.find(options);
   }
 
   async findOne(options) {

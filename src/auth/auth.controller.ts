@@ -33,7 +33,7 @@ export class AuthController {
   async register(@Body() body: RegisterUserDto) {
     const { password_confirm, ...data } = body;
 
-    const users = await this.userService.find(body.email);
+    const users = await this.userService.find({ email: body.email });
 
     if (users.length) {
       throw new BadRequestException('Email in use');
