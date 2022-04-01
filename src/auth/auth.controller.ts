@@ -4,17 +4,22 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpCode,
   NotFoundException,
+  Patch,
   Post,
   Req,
   Res,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import { UserService } from '../user/user.service';
-import { RegisterDto } from './dtos/register.dto';
+import { AuthGuard } from './auth.guard';
+import { RegisterUserDto } from './dtos/register-user.dto';
+import { UpdateUserDto } from './dtos/update-user.dto';
 
 @Controller()
 @UseInterceptors(ClassSerializerInterceptor) // exclude password
@@ -25,13 +30,8 @@ export class AuthController {
   ) {}
 
   @Post('admin/register')
-  async register(@Body() body: RegisterDto) {
+  async register(@Body() body: RegisterUserDto) {
     const { password_confirm, ...data } = body;
-
-    // const users = await this.usersService.find(email);
-    // if (users.length) {
-    //   throw new BadRequestException('Email in use');
-    // }
 
     if (body.password !== password_confirm) {
       throw new BadRequestException('Passwords do not match');
@@ -47,6 +47,7 @@ export class AuthController {
   }
 
   @Post('admin/login')
+  @HttpCode(200)
   async login(
     @Body('email') email: string,
     @Body('password') password: string,
@@ -73,6 +74,7 @@ export class AuthController {
     };
   }
 
+  @UseGuards(AuthGuard)
   @Get('admin/user')
   async user(@Req() request: Request) {
     const cookie = request.cookies['jwt'];
@@ -82,5 +84,46 @@ export class AuthController {
     const user = await this.userService.findOne(id);
 
     return user;
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('admin/logout')
+  @HttpCode(200)
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('jwt');
+
+    return {
+      message: 'success',
+    };
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('admin/users/info')
+  async updateInfo(@Req() request: Request, @Body() body: UpdateUserDto) {
+    const cookie = request.cookies['jwt'];
+
+    const { id } = await this.jwtService.verifyAsync(cookie);
+
+    return this.userService.update(id, body);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('admin/users/password')
+  async updatePassword(
+    @Req() request: Request,
+    @Body('password') password: string,
+    @Body('password_confirm') password_confirm: string,
+  ) {
+    if (password !== password_confirm) {
+      throw new BadRequestException('Passwords do not match');
+    }
+
+    const cookie = request.cookies['jwt'];
+
+    const { id } = await this.jwtService.verifyAsync(cookie);
+
+    return this.userService.update(id, {
+      password: await bcrypt.hash(password, 12),
+    });
   }
 }

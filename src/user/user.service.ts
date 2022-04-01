@@ -16,4 +16,12 @@ export class UserService {
   async findOne(options) {
     return this.userRepository.findOne(options);
   }
+
+  async update(id: number, options: Partial<User>) {
+    const user = await this.userRepository.findOne(id);
+
+    Object.assign(user, options);
+
+    return this.userRepository.save(user);
+  }
 }
