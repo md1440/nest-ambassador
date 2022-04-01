@@ -13,6 +13,10 @@ export class UserService {
     return this.userRepository.save(options);
   }
 
+  async find(email: string) {
+    return this.userRepository.find({ email });
+  }
+
   async findOne(options) {
     return this.userRepository.findOne(options);
   }

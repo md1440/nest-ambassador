@@ -33,6 +33,12 @@ export class AuthController {
   async register(@Body() body: RegisterUserDto) {
     const { password_confirm, ...data } = body;
 
+    const users = await this.userService.find(body.email);
+
+    if (users.length) {
+      throw new BadRequestException('Email in use');
+    }
+
     if (body.password !== password_confirm) {
       throw new BadRequestException('Passwords do not match');
     }
