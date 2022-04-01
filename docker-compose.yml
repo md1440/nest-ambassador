@@ -9,7 +9,6 @@ services:
       - .:/app
     depends_on:
       - db
-    cpus: 4
 
   db:
     image: mysql:5.7.22
