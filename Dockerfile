@@ -1,4 +1,4 @@
-FROM node:17.4
+FROM node:17.8.0-alpine3.15
 
 WORKDIR /app
 # copy package.json to /app
@@ -7,4 +7,4 @@ RUN npm install
 # copy all files to /app
 COPY . .
 
-# CMD npm run start:dev
+CMD npm run start:dev
