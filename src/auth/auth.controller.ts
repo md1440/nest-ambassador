@@ -16,6 +16,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
+import { User } from 'src/user/user.entity';
 import { UserService } from '../user/user.service';
 import { AuthGuard } from './auth.guard';
 import { RegisterUserDto } from './dtos/register-user.dto';
@@ -59,7 +60,7 @@ export class AuthController {
     @Body('password') password: string,
     @Res({ passthrough: true }) response: Response, // send cookie from backend to frontend
   ) {
-    const user = await this.userService.findOne({ email });
+    const user: User = await this.userService.findOne({ email });
 
     if (!user) {
       throw new NotFoundException('User not found');
