@@ -1,3 +1,4 @@
+import { ProductCreateDto } from '../product/dtos/product-create.dto';
 import { Repository } from 'typeorm';
 import { Product } from '../product/product.entity';
 import { User } from '../user/user.entity';
@@ -17,11 +18,18 @@ export abstract class AbstractService {
     return this.repository.findOne(options);
   }
 
-  async update(id: number, options: Partial<User | Product>) {
+  async update(
+    id: number,
+    options: Partial<User | Product | ProductCreateDto>,
+  ) {
     const user = await this.repository.findOne(id);
 
     Object.assign(user, options);
 
     return this.repository.save(user);
+  }
+
+  async delete(id: number) {
+    return this.repository.delete(id);
   }
 }
