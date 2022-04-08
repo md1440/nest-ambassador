@@ -94,7 +94,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('admin/logout')
+  @Get('admin/logout')
   @HttpCode(200)
   async logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('jwt');
