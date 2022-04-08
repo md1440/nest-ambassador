@@ -16,7 +16,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
-import { User } from 'src/user/user.entity';
+import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { AuthGuard } from './auth.guard';
 import { RegisterUserDto } from './dtos/register-user.dto';
