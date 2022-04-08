@@ -5,8 +5,10 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Order } from '../order/order.entity';
 import { Product } from '../product/product.entity';
 import { User } from '../user/user.entity';
 
@@ -29,4 +31,13 @@ export class Link {
     inverseJoinColumn: { name: 'product_id', referencedColumnName: 'id' },
   })
   products: Product[];
+
+  @OneToMany(() => Order, (order) => order.link, {
+    createForeignKeyConstraints: false, // connects in Nest but not in DB
+  })
+  @JoinColumn({
+    referencedColumnName: 'code',
+    name: 'code',
+  })
+  orders: Order[];
 }
