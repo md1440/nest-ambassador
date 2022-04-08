@@ -1,5 +1,5 @@
-import { ProductCreateDto } from '../product/dtos/product-create.dto';
 import { Repository } from 'typeorm';
+import { ProductCreateDto } from '../product/dtos/product-create.dto';
 import { Product } from '../product/product.entity';
 import { User } from '../user/user.entity';
 
@@ -10,7 +10,7 @@ export abstract class AbstractService {
     return this.repository.save(options);
   }
 
-  async find(options) {
+  async find(options = {}) {
     return this.repository.find(options);
   }
 
