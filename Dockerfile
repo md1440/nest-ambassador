@@ -4,6 +4,7 @@ WORKDIR /app
 # copy package.json to /app
 
 COPY package.json .
+
 RUN npm install
 
 # copy all files to /app
