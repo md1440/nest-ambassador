@@ -10,8 +10,9 @@ import {
   Post,
   Req,
   Res,
+  UnauthorizedException,
   UseGuards,
-  UseInterceptors,
+  UseInterceptors
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
@@ -59,6 +60,7 @@ export class AuthController {
     @Body('email') email: string,
     @Body('password') password: string,
     @Res({ passthrough: true }) response: Response, // send cookie from backend to frontend
+    @Req() request: Request,
   ) {
     const user: User = await this.userService.findOne({ email });
 
@@ -70,8 +72,16 @@ export class AuthController {
       throw new BadRequestException('Invalid password');
     }
 
+    const adminLogin = request.path === '/api/admin/login';
+
+    // disallow ambassador to login on admin routes
+    if(user.is_ambassador && adminLogin) {
+      throw new UnauthorizedException();
+    }
+
     const jwt = await this.jwtService.signAsync({
       id: user.id,
+      scope: adminLogin ? 'admin' : 'ambassador',
     });
 
     response.cookie('jwt', jwt, { httpOnly: true });
