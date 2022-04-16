@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Entity } from 'typeorm/decorator/entity/Entity';
 import { Link } from '../link/link.entity';
+import { User } from '../user/user.entity';
 import { OrderItem } from './order-item.entity';
 
 @Entity('orders')
@@ -66,6 +67,11 @@ export class Order {
   })
   link: Link;
 
+  @ManyToOne(() => User, (user) => user.orders, {
+    createForeignKeyConstraints: false,
+  })
+  user: User;
+
   @Expose()
   get name() {
     return `${this.first_name} ${this.last_name}`;
@@ -74,5 +80,9 @@ export class Order {
   @Expose()
   get total() {
     return this.order_items.reduce((sum, i) => sum + i.admin_revenue, 0);
+  }
+
+  get ambassador_revenue() {
+    return this.order_items.reduce((sum, i) => sum + i.ambassador_revenue, 0);
   }
 }

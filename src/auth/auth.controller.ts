@@ -12,7 +12,7 @@ import {
   Res,
   UnauthorizedException,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
@@ -75,7 +75,7 @@ export class AuthController {
     const adminLogin = request.path === '/api/admin/login';
 
     // disallow ambassador to login on admin routes
-    if(user.is_ambassador && adminLogin) {
+    if (user.is_ambassador && adminLogin) {
       throw new UnauthorizedException();
     }
 
@@ -98,9 +98,22 @@ export class AuthController {
 
     const { id } = await this.jwtService.verifyAsync(cookie); // id sent as payload in post login
 
-    const user = await this.userService.findOne(id);
+    if (request.path === '/api/admin/user') {
+      const user: User = await this.userService.findOne(id);
+      return user;
+    }
 
-    return user;
+    const user: User = await this.userService.findOne({
+      id,
+      relations: ['orders', 'orders.order_items'],
+    });
+
+    const { orders, password, ...data } = user;
+
+    return {
+      ...data,
+      revenue: user.revenue,
+    };
   }
 
   @UseGuards(AuthGuard)
